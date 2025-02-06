@@ -1,5 +1,5 @@
 name: "HA Notification Tap"
-version: "0.0.1"
+version: "1.0.0"
 slug: "ha_notification_tap"
 description: "Handle Home Assistant notification tap actions"
 url: "https://github.com/iamjoshk/ha-notification-tap"
@@ -14,11 +14,13 @@ boot: auto
 ports:
   8099/tcp: 8099
 ports_description:
-  8099/tcp: "Web server port"
+  8099/tcp: "Web server port (optional)"
 init: false
 hassio_api: true
 homeassistant_api: true
 host_network: true
+ingress: true
+ingress_port: 8099
 options:
   event_type: "notification_tap"
   actions:

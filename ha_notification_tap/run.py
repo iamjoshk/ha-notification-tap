@@ -8,8 +8,9 @@ EVENT_TYPE = "notification_tap_event"
 
 async def handle_tap(request):
     event_data = request.match_info['event_data']
+    print(f"DEBUG: Received tap with data: {event_data}")
+    print(f"DEBUG: Supervisor token exists: {bool(SUPERVISOR_TOKEN)}")
     
-    # Use connection pooling and timeouts
     timeout = ClientTimeout(total=10)
     connector = TCPConnector(force_close=True)
     
@@ -21,11 +22,19 @@ async def handle_tap(request):
             }
             
             url = f"{HA_URL}/events/{EVENT_TYPE}"
+            print(f"DEBUG: Sending event to: {url}")
+            print(f"DEBUG: Event data: {{'data': {event_data}}}")
+            
             async with session.post(url, headers=headers, json={"data": event_data}) as response:
+                response_text = await response.text()
+                print(f"DEBUG: Response status: {response.status}")
+                print(f"DEBUG: Response text: {response_text}")
+                
                 if response.status == 200:
                     return web.Response(text="OK", status=200)
-                return web.Response(text=await response.text(), status=response.status)
+                return web.Response(text=response_text, status=response.status)
         except Exception as e:
+            print(f"DEBUG: Error occurred: {str(e)}")
             return web.Response(text=str(e), status=500)
 
 async def cleanup_background_tasks(app):

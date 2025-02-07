@@ -1,5 +1,3 @@
 #!/usr/bin/with-contenv bashio
-
-cd /usr/src/app || bashio::exit.nok "Failed to change directory"
-
-exec python3 -u run.py
+cd /usr/src/app
+PYTHONUNBUFFERED=1 exec python3 run.py

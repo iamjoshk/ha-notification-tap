@@ -1,19 +1,13 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Install required packages
-RUN \
-    apk add --no-cache \
-        python3
-
-WORKDIR /usr/src/app
-
 # Copy files
+WORKDIR /usr/src/app
 COPY run.py .
 COPY rootfs /
 
-# No need for S6 setup - it's in the base image
-CMD ["/init"]
+# Use s6-overlay from base image
+ENTRYPOINT [ "/init" ]
 
 LABEL \
     io.hass.name="HA Notification Tap" \

@@ -1,5 +1,7 @@
 {
   "name": "HA Notification Tap Repository",
   "url": "https://github.com/iamjoshk/ha-notification-tap",
-  "maintainer": "Josh K <github@iamjoshk>"
+  "maintainer": "Josh K <github@iamjoshk>",
+  "repos": false,
+  "version": "0.0.1-alpha"
 }

@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/aarch64-base:latest
+ARG BUILD_FROM
 FROM $BUILD_FROM
 
 # Set shell
@@ -21,17 +21,11 @@ RUN \
         py3-async-timeout \
         py3-frozenlist \
         py3-aiosignal \
-        py3-typing-extensions \
-        s6
+        py3-typing-extensions
 
 # Copy root filesystem
 COPY rootfs /
-
-# Set permissions for S6 scripts and configs
-RUN chmod a+x /etc/services.d/notify-tap/run \
-    && chmod a+x /etc/services.d/notify-tap/finish \
-    && chmod 644 /etc/services.d/notify-tap/type \
-    && chmod 644 /etc/services.d/notify-tap/notification-fd
+RUN chmod a+x /etc/services.d/notify-tap/run
 
 WORKDIR /usr/src/app
 

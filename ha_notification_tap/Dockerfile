@@ -21,14 +21,17 @@ RUN \
         py3-async-timeout \
         py3-frozenlist \
         py3-aiosignal \
-        py3-typing-extensions
+        py3-typing-extensions \
+        s6-utils
 
 # Copy root filesystem
 COPY rootfs /
 
-# Set permissions for S6 scripts
+# Set permissions for S6 scripts and configs
 RUN chmod a+x /etc/services.d/notify-tap/run \
-    && chmod a+x /etc/services.d/notify-tap/finish
+    && chmod a+x /etc/services.d/notify-tap/finish \
+    && chmod 644 /etc/services.d/notify-tap/type \
+    && chmod 644 /etc/services.d/notify-tap/notification-fd
 
 WORKDIR /usr/src/app
 

@@ -3,10 +3,17 @@
 # Start the notify-tap service
 # ==============================================================================
 
-# Use S6-Overlay notification to indicate service is starting
-s6-notifyoncheck -d -n 300 -w 1000 
-
 cd /usr/src/app || exit 1
 
+# Trap SIGTERM
+trap 'kill -TERM $PID' TERM INT
+
 # Start the service
-exec python3 run.py
+python3 run.py &
+PID=$!
+
+# Wait for process to end
+wait "$PID"
+
+# Notify supervisor about service stop
+s6-svscanctl -t /var/run/s6/services

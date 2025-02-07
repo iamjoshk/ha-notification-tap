@@ -1,14 +1,19 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Install python
-RUN apk add --no-cache python3 py3-pip py3-aiohttp
+# Install python and dependencies
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    py3-aiohttp
 
 WORKDIR /usr/src/app
-COPY run.py .
-COPY rootfs /
 
-CMD ["/usr/bin/with-contenv", "python3", "/usr/src/app/run.py"]
+# Copy application files
+COPY run.py .
+
+# Run directly without S6
+CMD ["python3", "run.py"]
 
 LABEL \
     io.hass.name="HA Notification Tap" \

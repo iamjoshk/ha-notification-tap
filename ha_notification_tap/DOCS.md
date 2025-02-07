@@ -36,7 +36,7 @@ automation:
       room: living_room
   action:
     - service: scene.turn_on
- t      target:
+      target:
         entity_id: scene.living_room_evening
 ```
 
@@ -55,3 +55,33 @@ When the notification is tapped:
 2. It looks up the configured data for that action
 3. It fires an event with both the configured data and the action_id
 4. Your automation can then handle the event
+
+## Usage Examples
+
+### Method 1: Using GET
+```yaml
+variables:
+  deep_link: "http://192.168.86.124:8099/api/notify-tap/test_data"
+```
+
+### Method 2: Using POST (Recommended)
+```bash
+# Using curl
+curl -X POST \
+  http://192.168.86.124:8099/api/notify-tap \
+  -H "Content-Type: application/json" \
+  -d '{"data": "test_data"}'
+```
+
+```yaml
+# In Home Assistant notification
+service: notify.mobile_app_josh
+data:
+  message: Test Click
+  data:
+    url: "http://192.168.86.124:8099/api/notify-tap"  # POST endpoint
+    method: "POST"
+    headers:
+      Content-Type: "application/json"
+    payload: '{"data": "test_data"}'
+```

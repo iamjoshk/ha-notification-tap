@@ -104,3 +104,39 @@ action: notify.mobile_app_josh
 ### Example URLs:
 ✅ `http://192.168.86.124:8099/api/notify-tap?data=test_data`
 ✅ `http://192.168.86.124:8099/api/notify-tap?data=turn_on_lights&room=living_room`
+
+## Notification Example
+
+```yaml
+# In automations.yaml or scripts.yaml
+service: notify.mobile_app_josh
+data:
+  message: "Test Click"
+  data:
+    # This opens directly in browser instead of HA app
+    url: "http://192.168.86.124:8099/api/notify-tap/test_data"
+```
+
+### Alternative Methods
+
+If the direct URL doesn't work, try:
+```yaml
+service: notify.mobile_app_josh
+data:
+  message: "Test Click"
+  title: "Test Notification"
+  data:
+    actions:
+      - action: "tap_action"
+        title: "Tap Me"
+        uri: "http://192.168.86.124:8099/api/notify-tap/test_data"
+```
+
+### Testing the Event
+
+You can test if events are being fired using curl:
+```bash
+curl "http://192.168.86.124:8099/api/notify-tap/test_data"
+```
+
+Then check your Home Assistant logs for the `notification_tap_event`.

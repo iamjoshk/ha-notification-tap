@@ -25,6 +25,12 @@ EVENT_TYPE = "notification_tap_event"
 
 async def handle_tap(request):
     try:
+        log("[DEBUG] ====== New Request ======")
+        log(f"[DEBUG] Method: {request.method}")
+        log(f"[DEBUG] URL: {request.url}")
+        log(f"[DEBUG] Headers: {dict(request.headers)}")
+        log(f"[DEBUG] Query: {request.query_string}")
+
         # Get event data from query or path
         if request.query_string:
             event_data = dict(request.query)
@@ -41,11 +47,16 @@ async def handle_tap(request):
             }
             
             url = f"{HA_URL}/events/{EVENT_TYPE}"
+            log(f"[DEBUG] Sending to HA: {url}")
+            log(f"[DEBUG] Event data: {event_data}")
+            
             async with session.post(url, headers=headers, json=event_data) as response:
+                response_text = await response.text()
+                log(f"[DEBUG] HA Response: {response.status} - {response_text}")
                 if response.status == 200:
                     log("[INFO] Event fired successfully")
                     return web.Response(text="OK", status=200)
-                log(f"[ERROR] Failed to fire event: {await response.text()}")
+                log(f"[ERROR] Failed to fire event: {response_text}")
                 return web.Response(text="Failed to fire event", status=response.status)
     except Exception as e:
         log(f"[ERROR] {str(e)}")

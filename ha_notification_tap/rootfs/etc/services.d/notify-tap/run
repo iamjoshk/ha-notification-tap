@@ -1,8 +1,0 @@
-#!/usr/bin/with-contenv bashio
-
-# Set working directory
-cd /usr/src/app || bashio::exit.nok "Could not change directory"
-
-# Run service
-bashio::log.info "Starting Notification Tap..."
-exec python3 -u run.py

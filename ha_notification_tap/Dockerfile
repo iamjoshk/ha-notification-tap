@@ -9,8 +9,11 @@ COPY run.py .
 # Use S6-Overlay for service management
 COPY rootfs /
 
-# Set S6 and service permissions
-RUN chmod -R 755 /etc/services.d && \
+# Create S6 directories and set permissions
+RUN mkdir -p /etc/services.d \
+    /etc/cont-init.d \
+    /etc/cont-finish.d && \
+    chmod -R 755 /etc/services.d && \
     chmod -R 755 /etc/cont-init.d && \
     chmod -R 755 /etc/cont-finish.d && \
     chmod 755 /init

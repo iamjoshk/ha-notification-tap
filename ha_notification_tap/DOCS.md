@@ -28,15 +28,18 @@ actions:
 1. Create a notification with a deep link:
 ```yaml
 variables:
-  deep_link: "deep-link://192.168.1.123:8099/api/notify-tap/"  # Replace IP with your HA IP
-  event_data: "turn_on_lights"
+  # The deep link must use homeassistant:// scheme
+  deep_link: "homeassistant://192.168.86.124:8099/api/notify-tap/"
+  event_data: "test_data"
 
-service: notify.mobile_app_phone
 data:
-  message: "Tap to trigger action"
+  message: Test Click
   data:
     clickAction: "{{ deep_link }}{{ event_data }}"
+action: notify.mobile_app_josh
 ```
+
+The full URL will be: `homeassistant://192.168.86.124:8099/api/notify-tap/test_data`
 
 2. Create an automation that listens for the event:
 ```yaml

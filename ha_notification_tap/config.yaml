@@ -1,5 +1,5 @@
 name: "HA Notification Tap"
-version: "0.0.1-alpha.11"
+version: "0.0.1-alpha.12"
 slug: "ha_notification_tap"
 description: "Fire events from notification taps"
 url: "https://github.com/iamjoshk/ha-notification-tap"

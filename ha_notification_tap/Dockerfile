@@ -1,17 +1,11 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-COPY rootfs /
-WORKDIR /usr/src/app
-
-# Install requirements
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
-
-# Copy app
+WORKDIR /app
 COPY run.py .
 
-# Labels
+CMD ["python3", "run.py"]
+
 LABEL \
     io.hass.name="HA Notification Tap" \
     io.hass.description="Handle notification tap actions" \

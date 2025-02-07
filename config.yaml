@@ -1,17 +1,23 @@
-name: "HA Notification Tap"
-version: "1.0.0"
+name: "HA Notification Tap Repository"
+version: "0.0.1"
 slug: "ha_notification_tap"
 description: "Handle Home Assistant notification tap actions"
 url: "https://github.com/iamjoshk/ha-notification-tap"
-init: false
+maintainer: "Josh K <github@iamjoshk>"
 arch:
   - armhf
   - armv7
   - aarch64
   - amd64
   - i386
-startup: "application"
-boot: "auto"
+startup: application
+boot: auto
+ports:
+  8099/tcp: 8099
+ports_description:
+  8099/tcp: "Web server port"
+init: true
+host_network: true
 options:
   event_type: "notification_tap"
   actions:

@@ -1,32 +1,17 @@
 ARG BUILD_FROM
-FROM $BUILD_FROM
+FROM ${BUILD_FROM}
 
-# Install required packages
-RUN \
-    apk add --no-cache \
-        python3 \
-        py3-pip \
-        py3-aiohttp \
-        py3-yarl \
-        py3-multidict \
-        py3-attrs \
-        py3-charset-normalizer \
-        py3-async-timeout \
-        py3-frozenlist \
-        py3-aiosignal \
-        py3-typing-extensions
-
+COPY rootfs /
 WORKDIR /usr/src/app
 
-# Copy application files
+# Install requirements
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
+# Copy app
 COPY run.py .
 
-# Copy service script
-COPY rootfs/etc/services.d/notify-tap/run /run.sh
-RUN chmod a+x /run.sh
-
-CMD ["/run.sh"]
-
+# Labels
 LABEL \
     io.hass.name="HA Notification Tap" \
     io.hass.description="Handle notification tap actions" \

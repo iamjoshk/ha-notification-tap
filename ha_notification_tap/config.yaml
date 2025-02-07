@@ -1,21 +1,16 @@
 name: "HA Notification Tap"
 version: "1.0.0"
 slug: "ha_notification_tap"
-description: "Handle Home Assistant notification tap actions"
+description: "A Home Assistant add-on for notification tap actions"
+url: "https://github.com/iamjoshk/ha-notification-tap"
 arch:
-  - armhf
-  - armv7
   - aarch64
   - amd64
+  - armhf
+  - armv7
   - i386
-startup: "application"
-boot: "auto"
-options:
-  event_type: "notification_tap"
-  actions:
-    example_action:
-      room: "living_room"
-      action: "lights_on"
-schema:
-  event_type: str
-  actions: dict
+init: false
+startup: application
+boot: auto
+options: {}
+schema: {}

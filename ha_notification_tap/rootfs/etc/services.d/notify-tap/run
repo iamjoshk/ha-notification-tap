@@ -1,3 +1,9 @@
 #!/usr/bin/with-contenv bashio
-cd /usr/src/app
-exec python3 run.py
+
+cd /usr/src/app || exit 1
+
+# Redirect stderr to stdout
+exec 2>&1
+
+# Run with systemd-compatible output
+exec python3 -u run.py

@@ -1,7 +1,12 @@
 #!/usr/bin/with-contenv bashio
 # ==============================================================================
 # Start the notify-tap service
+# s6-overlay docs: https://github.com/just-containers/s6-overlay
 # ==============================================================================
 
+# Redirect stdout/stderr to Home Assistant's logging system
+exec 2>&1
+
 bashio::log.info "Starting Notification Tap service..."
-exec python3 /usr/src/app/run.py
+cd /usr/src/app
+exec python3 run.py

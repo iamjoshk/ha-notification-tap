@@ -1,6 +1,11 @@
 #!/usr/bin/with-contenv bashio
 
-cd /usr/src/app || exit 1
+# Enable debug if configured
+if bashio::config.true 'debug'; then
+    bashio::log.level "debug"
+fi
 
-# Start Python with proper signal handling
+cd /usr/src/app || bashio::exit.nok "Could not change directory"
+
+bashio::log.info "Starting Notification Tap service..."
 exec python3 -u run.py

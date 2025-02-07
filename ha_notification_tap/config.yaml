@@ -1,5 +1,5 @@
 name: "HA Notification Tap"
-version: "0.0.1-alpha.28"
+version: "0.0.1-alpha.29"
 slug: "ha_notification_tap"
 description: "Fire events from notification taps"
 url: "https://github.com/iamjoshk/ha-notification-tap"
@@ -9,7 +9,7 @@ arch:
   - armhf
   - armv7
   - i386
-init: false
+init: true
 startup: application
 boot: auto
 hassio_api: true

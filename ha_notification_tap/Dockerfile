@@ -1,29 +1,14 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Copy files
+# Install python
+RUN apk add --no-cache python3 py3-pip py3-aiohttp
+
 WORKDIR /usr/src/app
 COPY run.py .
 COPY rootfs /
 
-# Debug: Show init file and permissions
-RUN ls -la /init && \
-    # Ensure S6 overlay directories exist
-    mkdir -p \
-        /etc/services.d \
-        /etc/cont-init.d \
-        /etc/cont-finish.d \
-        /etc/fix-attrs.d && \
-    # Fix permissions
-    chmod +x /init && \
-    chmod -R 755 /etc/services.d && \
-    chmod -R 755 /etc/cont-init.d && \
-    chmod -R 755 /etc/cont-finish.d
-
-# Switch to root for init
-USER root
-
-ENTRYPOINT [ "/init" ]
+CMD ["/usr/bin/with-contenv", "python3", "/usr/src/app/run.py"]
 
 LABEL \
     io.hass.name="HA Notification Tap" \

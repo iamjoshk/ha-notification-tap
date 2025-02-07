@@ -59,7 +59,8 @@ async def handle_tap(request):
             log(f"[DEBUG] Headers: {headers}")
             log(f"[DEBUG] Data: {event_data}")
             
-            async with session.put(url, headers=headers, json=event_data) as response:
+            # Use POST to match HA API
+            async with session.post(url, headers=headers, json=event_data) as response:
                 response_text = await response.text()
                 log(f"[DEBUG] Response ({response.status}): {response_text}")
                 
@@ -81,8 +82,11 @@ async def handle_tap(request):
         return web.Response(text=str(e), status=500)
 
 app = web.Application()
-app.router.add_put('/api/notify-tap/{event_data}', handle_tap)
-app.router.add_put('/api/notify-tap', handle_tap)
+# Support both GET and POST
+app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
+app.router.add_get('/api/notify-tap', handle_tap)
+app.router.add_post('/api/notify-tap/{event_data}', handle_tap)
+app.router.add_post('/api/notify-tap', handle_tap)
 
 if __name__ == '__main__':
     log(f"[INFO] Starting server on port 8099")

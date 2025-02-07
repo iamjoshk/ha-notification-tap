@@ -14,12 +14,12 @@ try:
         config = json.load(f)
         HA_TOKEN = config.get('ha_token')
         HA_HOST = config.get('ha_host', 'homeassistant')
-        HA_URL = f"http://{HA_HOST}:8123"
+        # Add /api to base URL
+        HA_URL = f"http://{HA_HOST}:8123/api"
+        log(f"[DEBUG] Config loaded - Host: {HA_HOST}, Token: {'Present' if HA_TOKEN else 'Missing'}")
 except Exception as e:
     log(f"[ERROR] Failed to load config: {e}")
-    HA_TOKEN = None
-    HA_HOST = 'homeassistant'
-    HA_URL = f"http://{HA_HOST}:8123"
+    sys.exit(1)
 
 EVENT_TYPE = "notification_tap_event"
 
@@ -39,20 +39,31 @@ async def handle_tap(request):
         
         log(f"[DEBUG] Processing event: {event_data}")
         
-        # Call HA API directly
         async with ClientSession() as session:
+            if not HA_TOKEN:
+                raise ValueError("Missing HA token")
+
             headers = {
                 "Authorization": f"Bearer {HA_TOKEN}",
                 "Content-Type": "application/json",
             }
             
+            # Construct proper API URL
             url = f"{HA_URL}/events/{EVENT_TYPE}"
-            log(f"[DEBUG] Sending to HA: {url}")
-            log(f"[DEBUG] Event data: {event_data}")
+            log(f"[DEBUG] Full request details:")
+            log(f"[DEBUG] URL: {url}")
+            log(f"[DEBUG] Headers: {headers}")
+            log(f"[DEBUG] Data: {event_data}")
             
             async with session.post(url, headers=headers, json=event_data) as response:
                 response_text = await response.text()
-                log(f"[DEBUG] HA Response: {response.status} - {response_text}")
+                log(f"[DEBUG] Response ({response.status}): {response_text}")
+                
+                if response.status == 404:
+                    log("[ERROR] API endpoint not found - check URL format")
+                elif response.status == 401:
+                    log("[ERROR] Unauthorized - check HA token")
+                
                 if response.status == 200:
                     log("[INFO] Event fired successfully")
                     return web.Response(text="OK", status=200)

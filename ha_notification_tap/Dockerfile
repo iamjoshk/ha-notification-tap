@@ -18,25 +18,20 @@ RUN \
         py3-multidict \
         py3-attrs \
         py3-charset-normalizer \
-        py3-async-timeout
-
-# Set up virtual environment
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+        py3-async-timeout \
+        py3-frozenlist \
+        py3-aiosignal \
+        py3-typing-extensions
 
 WORKDIR /usr/src/app
 
 # Copy application files
 COPY run.py .
-COPY requirements.txt .
-
-# Install requirements in virtual environment
-RUN . /opt/venv/bin/activate && pip install --no-cache-dir -r requirements.txt
 
 # Make script executable
 RUN chmod a+x run.py
 
-CMD [ "/opt/venv/bin/python3", "run.py" ]
+CMD [ "python3", "run.py" ]
 
 LABEL \
     io.hass.name="HA Notification Tap" \

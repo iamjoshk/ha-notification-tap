@@ -2,7 +2,8 @@
 
 profile ha_notification_tap flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/base>
-  
+  #include <abstractions/python>
+
   # Capabilities
   capability net_bind_service,
 
@@ -19,14 +20,14 @@ profile ha_notification_tap flags=(attach_disconnected,mediate_deleted) {
   /run/{,**} rwk,
   /dev/tty rw,
 
-  # Access to options.json and other files within /data
+  # Python
+  /usr/bin/python3 ix,
+  /usr/lib/python3.** mr,
+
+  # Add-on files
+  /usr/src/app/** r,
   /data/** rw,
 
-  # Programs
-  /usr/bin/python3 cx,
-  /usr/lib/python3.11/** r,
-  
   # Network access
   network tcp,
-  network udp,
 }

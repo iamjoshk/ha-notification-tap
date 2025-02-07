@@ -55,16 +55,41 @@ automation:
       entity_id: light.living_room
 ```
 
-## Deep Link Format
+## Usage Examples
 
-The deep link format is:
-```
-notify-tap/YOUR_DATA_HERE
+### For Android Using HTTP Request Shortcuts:
+```yaml
+# Method 1: Direct URL
+variables:
+  deep_link: "http://192.168.86.124:8099/api/notify-tap/"
+  event_data: "test_data"
+
+# Method 2: Using http:// scheme (alternative)
+variables:
+  deep_link: "http://192.168.86.124:8099/api/notify-tap/"
+  event_data: "test_data"
+
+data:
+  message: Test Click
+  data:
+    clickAction: "{{ deep_link }}{{ event_data }}"
+action: notify.mobile_app_josh
 ```
 
-This will fire a `notification_tap_event` with:
-```json
-{
-  "data": "YOUR_DATA_HERE"
-}
+### For iOS or Home Assistant App:
+```yaml
+variables:
+  deep_link: "homeassistant://navigate/192.168.86.124:8099/api/notify-tap/"
+  event_data: "test_data"
+
+data:
+  message: Test Click
+  data:
+    clickAction: "{{ deep_link }}{{ event_data }}"
+action: notify.mobile_app_josh
 ```
+
+## Note on URL Schemes
+- Use `http://` for direct web requests (Android)
+- Use `homeassistant://` for Home Assistant app navigation
+- The add-on listens on standard HTTP, so direct HTTP calls will work

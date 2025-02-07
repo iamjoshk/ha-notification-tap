@@ -13,6 +13,10 @@ EVENT_TYPE = "notification_tap_event"
 
 async def handle_tap(request):
     event_data = request.match_info['event_data']
+    log(f"[DEBUG] Full URL: {request.url}")
+    log(f"[DEBUG] Headers: {dict(request.headers)}")
+    log(f"[DEBUG] Query String: {request.query_string}")
+    log(f"[DEBUG] Remote: {request.remote}")
     log(f"[DEBUG] Received request: {request.url}")
     log(f"[DEBUG] Event data: {event_data}")
     

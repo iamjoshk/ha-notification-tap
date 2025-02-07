@@ -1,10 +1,15 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-WORKDIR /app
+WORKDIR /usr/src/app
+
+# Copy app files
 COPY run.py .
 
-CMD ["python3", "run.py"]
+# Use S6-Overlay for service management
+COPY rootfs /
+
+CMD [ "/init" ]
 
 LABEL \
     io.hass.name="HA Notification Tap" \

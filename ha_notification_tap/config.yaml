@@ -1,5 +1,5 @@
 name: "HA Notification Tap"
-version: "0.0.1-alpha.20
+version: "0.0.1-alpha.21"
 slug: "ha_notification_tap"
 description: "Fire events from notification taps"
 url: "https://github.com/iamjoshk/ha-notification-tap"
@@ -10,10 +10,16 @@ arch:
   - armv7
   - i386
 init: false
+startup: application
+boot: auto
 hassio_api: true
 homeassistant_api: true
-host_network: true
 ports:
   8099/tcp: 8099
 ports_description:
   8099/tcp: "Web server port"
+options:
+  debug: false
+schema:
+  debug: bool
+host_network: true

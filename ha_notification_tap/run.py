@@ -1,29 +1,34 @@
 import logging
 import os
 import sys
-from aiohttp import web, ClientSession
+import asyncio
+from aiohttp import web, ClientSession, ClientTimeout
+from contextlib import asynccontextmanager
 
-# Configure logging to output to stderr for S6
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    stream=sys.stderr
+    stream=sys.stdout  # Change to stdout for S6
 )
 logger = logging.getLogger("notify_tap")
-
-# Disable aiohttp access logging
-logging.getLogger('aiohttp.access').setLevel(logging.WARNING)
 
 SUPERVISOR_TOKEN = os.environ.get('SUPERVISOR_TOKEN')
 HA_URL = "http://supervisor/core/api"
 EVENT_TYPE = "notification_tap_event"
 
+@asynccontextmanager
+async def get_client_session():
+    timeout = ClientTimeout(total=10)
+    async with ClientSession(timeout=timeout) as session:
+        yield session
+
 async def handle_tap(request):
     event_data = request.match_info['event_data']
     logger.info(f"Received tap event with data: {event_data}")
     
-    async with ClientSession() as session:
-        try:
+    try:
+        async with get_client_session() as session:
             headers = {
                 "Authorization": f"Bearer {SUPERVISOR_TOKEN}",
                 "Content-Type": "application/json",
@@ -40,13 +45,18 @@ async def handle_tap(request):
                     error_text = await response.text()
                     logger.error(f"Failed to fire event: {error_text}")
                     return web.Response(text=error_text, status=response.status)
-        except Exception as e:
-            logger.exception("Error processing tap event")
-            return web.Response(text=f"Error: {str(e)}", status=500)
+    except Exception as e:
+        logger.exception("Error processing tap event")
+        return web.Response(text=f"Error: {str(e)}", status=500)
+
+async def cleanup(app):
+    logger.info("Cleaning up resources...")
+    await asyncio.sleep(0.1)  # Allow pending tasks to complete
 
 app = web.Application()
 app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
+app.on_cleanup.append(cleanup)
 
 if __name__ == '__main__':
     logger.info("Starting Notification Tap service")
-    web.run_app(app, port=8099, access_log=None)
+    web.run_app(app, port=8099, access_log=None, print=logger.info)

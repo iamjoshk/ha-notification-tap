@@ -1,12 +1,16 @@
 #!/usr/bin/with-contenv bashio
 # ==============================================================================
 # Start the notify-tap service
-# s6-overlay docs: https://github.com/just-containers/s6-overlay
 # ==============================================================================
 
-# Redirect stdout/stderr to Home Assistant's logging system
-exec 2>&1
-
+# Use bashio for logging
 bashio::log.info "Starting Notification Tap service..."
-cd /usr/src/app
-exec python3 run.py
+
+# Set up error handling
+trap 'bashio::exit.nok "Unexpected error occurred"' ERR
+
+# Ensure we're in the right directory
+cd /usr/src/app || bashio::exit.nok "Could not change directory"
+
+# Start the Python service
+exec python3 run.py 2>&1

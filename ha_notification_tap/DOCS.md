@@ -1,6 +1,6 @@
 # HA Notification Tap
 
-This add-on handles deep links from Home Assistant notification click actions and fires events on the event bus.
+Fires events on Home Assistant's event bus from notification taps.
 
 ## Configuration
 
@@ -21,3 +21,42 @@ actions:
 
 - `event_type`: The type of event to fire on the event bus
 - `actions`: A dictionary of action IDs and their associated event data
+
+## Usage Example
+
+1. Create a notification with a deep link:
+```yaml
+service: notify.mobile_app_phone
+data:
+  message: "Tap to trigger action"
+  data:
+    clickAction: "notify-tap/turn_on_lights"  # Any string after notify-tap/ will be sent as event data
+```
+
+2. Create an automation that listens for the event:
+```yaml
+automation:
+  trigger:
+    platform: event
+    event_type: notification_tap_event
+    event_data:
+      data: turn_on_lights  # Match the string from your deep link
+  action:
+    service: light.turn_on
+    target:
+      entity_id: light.living_room
+```
+
+## Deep Link Format
+
+The deep link format is:
+```
+notify-tap/YOUR_DATA_HERE
+```
+
+This will fire a `notification_tap_event` with:
+```json
+{
+  "data": "YOUR_DATA_HERE"
+}
+```

@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from aiohttp import web, ClientSession
@@ -8,24 +7,11 @@ logger = logging.getLogger(__name__)
 
 SUPERVISOR_TOKEN = os.environ.get('SUPERVISOR_TOKEN')
 HA_URL = "http://supervisor/core/api"
+EVENT_TYPE = "notification_tap_event"
 
 async def handle_tap(request):
-    action_id = request.match_info['action_id']
+    event_data = request.match_info['event_data']
     
-    try:
-        with open('/data/options.json', 'r') as f:
-            config = json.load(f)
-    except Exception as e:
-        return web.Response(text=f"Error loading config: {str(e)}", status=500)
-
-    # Get event data for this action
-    event_data = config['actions'].get(action_id)
-    if not event_data:
-        return web.Response(text=f"Action {action_id} not found", status=404)
-
-    # Add action_id to event data
-    event_data = {**event_data, 'action_id': action_id}
-
     async with ClientSession() as session:
         try:
             headers = {
@@ -33,8 +19,8 @@ async def handle_tap(request):
                 "Content-Type": "application/json",
             }
             
-            url = f"{HA_URL}/events/{config['event_type']}"
-            async with session.post(url, headers=headers, json=event_data) as response:
+            url = f"{HA_URL}/events/{EVENT_TYPE}"
+            async with session.post(url, headers=headers, json={"data": event_data}) as response:
                 if response.status == 200:
                     return web.Response(text="Event fired", status=200)
                 else:
@@ -43,7 +29,7 @@ async def handle_tap(request):
             return web.Response(text=f"Error: {str(e)}", status=500)
 
 app = web.Application()
-app.router.add_get('/deep-link-to-ha-notify-tap-addon/{action_id}', handle_tap)
+app.router.add_get('/notify-tap/{event_data}', handle_tap)
 
 if __name__ == '__main__':
     web.run_app(app, port=8099)

@@ -21,7 +21,10 @@ RUN \
         py3-async-timeout \
         py3-frozenlist \
         py3-aiosignal \
-        py3-typing-extensions
+        py3-typing-extensions \
+        python3-dev \
+        gcc \
+        musl-dev
 
 # Copy root filesystem
 COPY rootfs /

@@ -65,8 +65,21 @@ app = web.Application()
 app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
 app.on_cleanup.append(cleanup_background_tasks)
 
+async def start_server():
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 8099)
+    await site.start()
+    logger.info("Server running on port 8099")
+
 if __name__ == '__main__':
     logger.info("Starting Notification Tap service...")
     if config.get('debug', False):
         logger.info("Debug logging enabled")
-    web.run_app(app, port=8099, access_log=logger if config.get('debug', False) else None, print=logger.info)
+    
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(start_server())
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass

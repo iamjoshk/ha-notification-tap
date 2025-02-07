@@ -5,11 +5,16 @@ import asyncio
 from aiohttp import web, ClientSession, ClientTimeout
 from contextlib import asynccontextmanager
 
-# Configure logging
+# Force unbuffered output
+sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
+
+# Configure logging to write to stdout without buffering
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    stream=sys.stdout  # Change to stdout for S6
+    format='%(asctime)s %(levelname)s: %(message)s',
+    stream=sys.stdout,
+    force=True
 )
 logger = logging.getLogger("notify_tap")
 
@@ -25,7 +30,8 @@ async def get_client_session():
 
 async def handle_tap(request):
     event_data = request.match_info['event_data']
-    logger.info(f"Received tap event with data: {event_data}")
+    print(f"Received tap event with data: {event_data}", flush=True)  # Direct print for immediate output
+    logger.info(f"Processing tap event: {event_data}")
     
     try:
         async with get_client_session() as session:
@@ -58,5 +64,11 @@ app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
 app.on_cleanup.append(cleanup)
 
 if __name__ == '__main__':
-    logger.info("Starting Notification Tap service")
-    web.run_app(app, port=8099, access_log=None, print=logger.info)
+    print("Starting Notification Tap service...", flush=True)  # Direct print for immediate output
+    logger.info("Initializing web server")
+    web.run_app(
+        app, 
+        port=8099, 
+        access_log=None,
+        print=lambda s: print(s, flush=True)  # Force flush on server messages
+    )

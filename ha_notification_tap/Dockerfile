@@ -9,9 +9,11 @@ COPY run.py .
 # Use S6-Overlay for service management
 COPY rootfs /
 
-# Set permissions
-RUN chmod a+x /etc/services.d/notify-tap/run && \
-    chmod a+x /init
+# Set S6 and service permissions
+RUN chmod -R 755 /etc/services.d && \
+    chmod -R 755 /etc/cont-init.d && \
+    chmod -R 755 /etc/cont-finish.d && \
+    chmod 755 /init
 
 CMD [ "/init" ]
 

@@ -8,8 +8,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV PYTHONIOENCODING=utf-8
 ENV LANG C.UTF-8
 
-WORKDIR /usr/src/app
-
 # Install required packages
 RUN \
     apk add --no-cache \
@@ -22,18 +20,23 @@ RUN \
         py3-charset-normalizer \
         py3-async-timeout
 
-# Copy your application
+# Set up virtual environment
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+WORKDIR /usr/src/app
+
+# Copy application files
 COPY run.py .
 COPY requirements.txt .
 
-# Install Python requirements
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Install requirements in virtual environment
+RUN . /opt/venv/bin/activate && pip install --no-cache-dir -r requirements.txt
 
 # Make script executable
 RUN chmod a+x run.py
 
-# Run script
-CMD [ "python3", "run.py" ]
+CMD [ "/opt/venv/bin/python3", "run.py" ]
 
 LABEL \
     io.hass.name="HA Notification Tap" \

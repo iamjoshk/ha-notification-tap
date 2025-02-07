@@ -2,8 +2,15 @@ import logging
 import os
 from aiohttp import web, ClientSession
 
-logging.basicConfig(level=logging.INFO)
+# Configure logging once
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
+
+# Prevent aiohttp access logging
+logging.getLogger('aiohttp.access').setLevel(logging.WARNING)
 
 SUPERVISOR_TOKEN = os.environ.get('SUPERVISOR_TOKEN')
 HA_URL = "http://supervisor/core/api"
@@ -32,4 +39,4 @@ app = web.Application()
 app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
 
 if __name__ == '__main__':
-    web.run_app(app, port=8099)
+    web.run_app(app, port=8099, print=logger.info, access_log=None)

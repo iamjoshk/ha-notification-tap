@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Start the notify-tap service
+# ==============================================================================
+
+bashio::log.info "Starting Notification Tap service..."
+exec python3 /usr/src/app/run.py

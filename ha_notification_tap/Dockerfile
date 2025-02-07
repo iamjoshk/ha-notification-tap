@@ -23,6 +23,13 @@ RUN \
         py3-aiosignal \
         py3-typing-extensions
 
+# Copy root filesystem
+COPY rootfs /
+
+# Set permissions for S6 scripts
+RUN chmod a+x /etc/services.d/notify-tap/run \
+    && chmod a+x /etc/services.d/notify-tap/finish
+
 WORKDIR /usr/src/app
 
 # Copy application files
@@ -30,8 +37,6 @@ COPY run.py .
 
 # Make script executable
 RUN chmod a+x run.py
-
-CMD [ "python3", "run.py" ]
 
 LABEL \
     io.hass.name="HA Notification Tap" \

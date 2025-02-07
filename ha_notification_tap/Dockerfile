@@ -8,6 +8,7 @@ COPY run.py .
 
 # Use S6-Overlay for service management
 COPY rootfs /
+RUN chmod a+x /etc/services.d/notify-tap/run
 
 CMD [ "/init" ]
 

@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bashio
+
+cd /usr/src/app || bashio::exit.nok "Failed to change directory"
+
+# Get debug setting
+if bashio::config.true 'debug'; then
+    bashio::log.level "debug"
+fi
+
+# Run the server
+exec python3 -u run.py

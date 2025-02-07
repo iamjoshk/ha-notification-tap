@@ -19,15 +19,20 @@ EVENT_TYPE = "notification_tap_event"
 
 async def handle_tap(request):
     try:
-        # Support both GET and POST
-        if request.method == 'POST':
-            # Get data from POST body
+        # Get data from query parameters or path
+        if request.query_string:
+            # Handle URL query parameters
+            event_data = dict(request.query)
+            log(f"[DEBUG] Query parameters received: {event_data}")
+        elif request.method == 'POST':
+            # Handle POST data
             data = await request.json()
-            event_data = data.get('data', '')
-            log(f"[DEBUG] POST data received: {data}")
+            event_data = data
+            log(f"[DEBUG] POST data received: {event_data}")
         else:
-            # Original GET method
-            event_data = request.match_info['event_data']
+            # Handle path parameter
+            event_data = {"data": request.match_info['event_data']}
+            log(f"[DEBUG] Path parameter received: {event_data}")
             
         log(f"[DEBUG] Processing event data: {event_data}")
         # Add HTTPS detection
@@ -79,8 +84,9 @@ async def handle_tap(request):
         return web.Response(text=str(e), status=500)
 
 app = web.Application()
-# Add both GET and POST routes
-app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
+# Add routes that handle both styles
+app.router.add_get('/api/notify-tap', handle_tap)  # For query parameters
+app.router.add_get('/api/notify-tap/{event_data}', handle_tap)  # For path parameters
 app.router.add_post('/api/notify-tap', handle_tap)
 
 if __name__ == '__main__':

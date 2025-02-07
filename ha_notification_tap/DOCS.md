@@ -85,3 +85,22 @@ data:
       Content-Type: "application/json"
     payload: '{"data": "test_data"}'
 ```
+
+## Notification Examples
+
+### Using URL-encoded POST data:
+```yaml
+variables:
+  # Encode the POST data in the URL
+  deep_link: "http://192.168.86.124:8099/api/notify-tap?data=test_data&action=turn_on_lights"
+
+data:
+  message: Test Click
+  data:
+    clickAction: "{{ deep_link }}"
+action: notify.mobile_app_josh
+```
+
+### Example URLs:
+✅ `http://192.168.86.124:8099/api/notify-tap?data=test_data`
+✅ `http://192.168.86.124:8099/api/notify-tap?data=turn_on_lights&room=living_room`

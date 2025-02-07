@@ -39,6 +39,10 @@ async def handle_tap(request):
         
         log(f"[DEBUG] Processing event: {event_data}")
         
+        # Check if request is from mobile browser
+        user_agent = request.headers.get('User-Agent', '').lower()
+        is_mobile = 'mobile' in user_agent or 'android' in user_agent or 'iphone' in user_agent
+        
         async with ClientSession() as session:
             if not HA_TOKEN:
                 raise ValueError("Missing HA token")
@@ -55,18 +59,21 @@ async def handle_tap(request):
             log(f"[DEBUG] Headers: {headers}")
             log(f"[DEBUG] Data: {event_data}")
             
-            async with session.post(url, headers=headers, json=event_data) as response:
+            async with session.put(url, headers=headers, json=event_data) as response:
                 response_text = await response.text()
                 log(f"[DEBUG] Response ({response.status}): {response_text}")
                 
                 if response.status == 404:
                     log("[ERROR] API endpoint not found - check URL format")
+                    return web.Response(text="API endpoint not found", status=404)
                 elif response.status == 401:
                     log("[ERROR] Unauthorized - check HA token")
+                    return web.Response(text="Unauthorized", status=401)
                 
                 if response.status == 200:
                     log("[INFO] Event fired successfully")
-                    return web.Response(text="OK", status=200)
+                    return  # No response on success
+                    
                 log(f"[ERROR] Failed to fire event: {response_text}")
                 return web.Response(text="Failed to fire event", status=response.status)
     except Exception as e:
@@ -74,8 +81,8 @@ async def handle_tap(request):
         return web.Response(text=str(e), status=500)
 
 app = web.Application()
-app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
-app.router.add_get('/api/notify-tap', handle_tap)
+app.router.add_put('/api/notify-tap/{event_data}', handle_tap)
+app.router.add_put('/api/notify-tap', handle_tap)
 
 if __name__ == '__main__':
     log(f"[INFO] Starting server on port 8099")

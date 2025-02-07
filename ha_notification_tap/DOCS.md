@@ -21,6 +21,7 @@ actions:
 
 - `event_type`: The type of event to fire on the event bus
 - `actions`: A dictionary of action IDs and their associated event data
+- `debug`: Enable debug logging (default: false)
 
 ## Usage Example
 

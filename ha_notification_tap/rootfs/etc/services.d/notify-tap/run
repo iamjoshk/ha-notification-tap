@@ -1,9 +1,9 @@
 #!/usr/bin/with-contenv bashio
 
+# Set up proper output handling
+exec 1> >(exec logger -s -t $(basename $0)) 2>&1
+
 cd /usr/src/app || exit 1
 
-# Redirect stderr to stdout
-exec 2>&1
-
-# Run with systemd-compatible output
-exec python3 -u run.py
+# Run with unbuffered output
+PYTHONUNBUFFERED=1 exec python3 run.py

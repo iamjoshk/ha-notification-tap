@@ -1,24 +1,19 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
+# Install required packages
+RUN \
+    apk add --no-cache \
+        python3
+
 WORKDIR /usr/src/app
 
-# Copy app files
+# Copy files
 COPY run.py .
-
-# Use S6-Overlay for service management
 COPY rootfs /
 
-# Create S6 directories and set permissions
-RUN mkdir -p /etc/services.d \
-    /etc/cont-init.d \
-    /etc/cont-finish.d && \
-    chmod -R 755 /etc/services.d && \
-    chmod -R 755 /etc/cont-init.d && \
-    chmod -R 755 /etc/cont-finish.d && \
-    chmod 755 /init
-
-CMD [ "/init" ]
+# No need for S6 setup - it's in the base image
+CMD ["/init"]
 
 LABEL \
     io.hass.name="HA Notification Tap" \

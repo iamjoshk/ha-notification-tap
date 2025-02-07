@@ -12,5 +12,12 @@ arch:
 init: false
 startup: application
 boot: auto
-options: {}
-schema: {}
+options:
+  event_type: "notification_tap"
+  actions:
+    example_action:
+      room: "living_room"
+      action: "lights_on"
+schema:
+  event_type: str
+  actions: dict

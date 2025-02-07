@@ -13,12 +13,13 @@ try:
     with open('/data/options.json') as f:
         config = json.load(f)
         HA_TOKEN = config.get('ha_token')
-        # Use supervisor's internal URL
-        HA_URL = "http://supervisor/core/api"
+        HA_HOST = config.get('ha_host', 'homeassistant')
+        HA_URL = f"http://{HA_HOST}:8123"
 except Exception as e:
     log(f"[ERROR] Failed to load config: {e}")
     HA_TOKEN = None
-    HA_URL = "http://supervisor/core/api"
+    HA_HOST = 'homeassistant'
+    HA_URL = f"http://{HA_HOST}:8123"
 
 EVENT_TYPE = "notification_tap_event"
 

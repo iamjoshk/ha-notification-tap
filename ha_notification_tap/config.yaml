@@ -17,9 +17,11 @@ ports_description:
   8099/tcp: "Web server port"
 options:
   ha_token: "!secret notify_tap_token"
+  ha_host: "!secret notify_tap_host"
   debug: false
 schema:
   ha_token: str
+  ha_host: str
   debug: bool
 host_network: true
 hassio_api: true

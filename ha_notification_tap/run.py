@@ -73,7 +73,8 @@ async def handle_tap(request):
                 
                 if response.status == 200:
                     log("[INFO] Event fired successfully")
-                    return  # No response on success
+                    # Always return a response, even if empty
+                    return web.Response(status=204)
                     
                 log(f"[ERROR] Failed to fire event: {response_text}")
                 return web.Response(text="Failed to fire event", status=response.status)

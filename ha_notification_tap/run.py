@@ -7,11 +7,26 @@ def log(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] {message}", file=sys.stderr, flush=True)
 
+# Get supervisor token and validate
 SUPERVISOR_TOKEN = os.environ.get('SUPERVISOR_TOKEN')
-CORE_API = "http://supervisor/core/api"
+if not SUPERVISOR_TOKEN:
+    log("[ERROR] No Supervisor token found! Make sure hassio_api and auth_api are enabled in config.yaml")
+    sys.exit(1)
+
+# Use correct Home Assistant API URL
+HA_URL = "http://supervisor/core/api"
 EVENT_TYPE = "notification_tap_event"
 
 async def handle_tap(request):
+    # Add HTTPS detection
+    if request.headers.get('X-Forwarded-Proto') == 'https' or \
+       request.url.scheme == 'https':
+        log("[ERROR] HTTPS request detected - this add-on only supports HTTP")
+        return web.Response(
+            text="This add-on only supports HTTP, not HTTPS. Please use http:// in your URL.",
+            status=400
+        )
+        
     event_data = request.match_info['event_data']
     log(f"[DEBUG] Full URL: {request.url}")
     log(f"[DEBUG] Headers: {dict(request.headers)}")
@@ -27,20 +42,26 @@ async def handle_tap(request):
                 "Content-Type": "application/json",
             }
             
-            url = f"{CORE_API}/events/{EVENT_TYPE}"
-            log(f"[DEBUG] Sending event to: {url}")
-            log(f"[DEBUG] Token exists: {bool(SUPERVISOR_TOKEN)}")
+            # Log full request details for debugging
+            url = f"{HA_URL}/events/{EVENT_TYPE}"
+            log(f"[DEBUG] Full request details:")
+            log(f"[DEBUG] URL: {url}")
+            log(f"[DEBUG] Headers: {headers}")
+            log(f"[DEBUG] Data: {{'data': {event_data}}}")
             
             async with session.post(url, headers=headers, json={"data": event_data}) as response:
                 response_text = await response.text()
                 log(f"[DEBUG] Response status: {response.status}")
+                log(f"[DEBUG] Response headers: {dict(response.headers)}")
                 log(f"[DEBUG] Response body: {response_text}")
                 
                 if response.status == 200:
+                    log("[INFO] Event fired successfully")
                     return web.Response(text="OK", status=200)
+                log("[ERROR] Failed to fire event")
                 return web.Response(text=response_text, status=response.status)
         except Exception as e:
-            log(f"[DEBUG] Error: {str(e)}")
+            log(f"[ERROR] Exception: {str(e)}")
             return web.Response(text=str(e), status=500)
 
 app = web.Application()
@@ -48,5 +69,12 @@ app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
 
 if __name__ == '__main__':
     log("[DEBUG] Starting server on port 8099")
-    log("[DEBUG] Waiting for requests...")
-    web.run_app(app, port=8099, print=None, access_log=None)
+    log("[DEBUG] Host networking enabled - server will be accessible on all network interfaces")
+    log("[DEBUG] Try accessing: http://YOUR_HA_IP:8099/api/notify-tap/test")
+    web.run_app(
+        app,
+        host='0.0.0.0',  # Listen on all interfaces
+        port=8099,
+        print=None,
+        access_log=None
+    )

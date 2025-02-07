@@ -1,6 +1,6 @@
 # HA Notification Tap
 
-Fires events on Home Assistant's event bus from notification taps.
+This add-on handles deep links from Home Assistant notification click actions and fires events on the event bus.
 
 ## Configuration
 
@@ -21,75 +21,37 @@ actions:
 
 - `event_type`: The type of event to fire on the event bus
 - `actions`: A dictionary of action IDs and their associated event data
-- `debug`: Enable debug logging (default: false)
 
 ## Usage Example
 
-1. Create a notification with a deep link:
-```yaml
-variables:
-  # The deep link must use homeassistant:// scheme
-  deep_link: "homeassistant://192.168.86.124:8099/api/notify-tap/"
-  event_data: "test_data"
+1. Configure an automation to listen for the event:
 
-data:
-  message: Test Click
-  data:
-    clickAction: "{{ deep_link }}{{ event_data }}"
-action: notify.mobile_app_josh
-```
-
-The full URL will be: `homeassistant://192.168.86.124:8099/api/notify-tap/test_data`
-
-2. Create an automation that listens for the event:
 ```yaml
 automation:
   trigger:
     platform: event
-    event_type: notification_tap_event
+    event_type: notification_tap
     event_data:
-      data: turn_on_lights  # Match the string from your deep link
+      action_id: turn_on_lights
+      room: living_room
   action:
-    service: light.turn_on
-    target:
-      entity_id: light.living_room
+    - service: scene.turn_on
+ t      target:
+        entity_id: scene.living_room_evening
 ```
 
-## Usage Examples
+2. Create a notification:
 
-### For Android Using HTTP Request Shortcuts:
 ```yaml
-# Method 1: Direct URL
-variables:
-  deep_link: "http://192.168.86.124:8099/api/notify-tap/"
-  event_data: "test_data"
-
-# Method 2: Using http:// scheme (alternative)
-variables:
-  deep_link: "http://192.168.86.124:8099/api/notify-tap/"
-  event_data: "test_data"
-
+service: notify.mobile_app_phone
 data:
-  message: Test Click
+  message: "Tap to turn on lights"
   data:
-    clickAction: "{{ deep_link }}{{ event_data }}"
-action: notify.mobile_app_josh
+    clickAction: "{% raw %}{{ 'deep-link-to-ha-notify-tap-addon/turn_on_lights' }}{% endraw %}"
 ```
 
-### For iOS or Home Assistant App:
-```yaml
-variables:
-  deep_link: "homeassistant://navigate/192.168.86.124:8099/api/notify-tap/"
-  event_data: "test_data"
-
-data:
-  message: Test Click
-  data:
-    clickAction: "{{ deep_link }}{{ event_data }}"
-action: notify.mobile_app_josh
-```
-
-## Note on URL Schemes
-- Use `http://` for direct web requests (Android)
-- Use `homeassistant://` for Home Assistant app navigation
-- The add-on listens on standard HTTP, so direct HTTP calls will work
+When the notification is tapped:
+1. The add-on receives the action ID ("turn_on_lights")
+2. It looks up the configured data for that action
+3. It fires an event with both the configured data and the action_id
+4. Your automation can then handle the event

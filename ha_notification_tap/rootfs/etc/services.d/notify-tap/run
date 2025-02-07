@@ -5,7 +5,7 @@ if bashio::config.true 'debug'; then
     bashio::log.level "debug"
 fi
 
-cd /usr/src/app || bashio::exit.nok "Could not change directory"
+cd /usr/src/app || exit 1
 
 bashio::log.info "Starting Notification Tap service..."
-exec python3 -u run.py
+PYTHONUNBUFFERED=1 exec python3 -u run.py 2>&1

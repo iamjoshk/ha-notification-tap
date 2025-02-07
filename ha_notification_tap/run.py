@@ -73,8 +73,14 @@ async def handle_tap(request):
                 
                 if response.status == 200:
                     log("[INFO] Event fired successfully")
-                    # Always return a response, even if empty
-                    return web.Response(status=204)
+                    # Redirect to HA app
+                    return web.Response(
+                        status=302,
+                        headers={
+                            'Location': 'homeassistant://navigate/lovelace/0',
+                            'Cache-Control': 'no-cache'
+                        }
+                    )
                     
                 log(f"[ERROR] Failed to fire event: {response_text}")
                 return web.Response(text="Failed to fire event", status=response.status)

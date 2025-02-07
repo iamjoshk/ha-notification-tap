@@ -22,7 +22,7 @@ RUN \
         py3-frozenlist \
         py3-aiosignal \
         py3-typing-extensions \
-        s6-utils
+        s6
 
 # Copy root filesystem
 COPY rootfs /

@@ -26,10 +26,6 @@ RUN \
         gcc \
         musl-dev
 
-# Copy root filesystem
-COPY rootfs /
-RUN chmod a+x /etc/services.d/notify-tap/run
-
 WORKDIR /usr/src/app
 
 # Copy application files
@@ -37,6 +33,15 @@ COPY run.py .
 
 # Make script executable
 RUN chmod a+x run.py
+
+# Copy root filesystem
+COPY rootfs /
+
+# Set up S6 service
+RUN mkdir -p /etc/services.d/notify-tap && \
+    chmod -R 755 /etc/services.d/notify-tap && \
+    chmod +x /etc/services.d/notify-tap/run && \
+    chmod +x /etc/services.d/notify-tap/finish
 
 LABEL \
     io.hass.name="HA Notification Tap" \

@@ -1,2 +1,2 @@
-#!/usr/bin/execlineb -S1
-foreground { s6-svscanctl -t /var/run/s6/services }
+#!/usr/bin/execlineb -S0
+s6-svscanctl -t /var/run/s6/services

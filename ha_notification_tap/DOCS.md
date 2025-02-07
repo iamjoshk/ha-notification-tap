@@ -26,11 +26,15 @@ actions:
 
 1. Create a notification with a deep link:
 ```yaml
+variables:
+  deep_link: "deep-link://192.168.1.123:8099/api/notify-tap/"  # Replace IP with your HA IP
+  event_data: "turn_on_lights"
+
 service: notify.mobile_app_phone
 data:
   message: "Tap to trigger action"
   data:
-    clickAction: "notify-tap/turn_on_lights"  # Any string after notify-tap/ will be sent as event data
+    clickAction: "{{ deep_link }}{{ event_data }}"
 ```
 
 2. Create an automation that listens for the event:

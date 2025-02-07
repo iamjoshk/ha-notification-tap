@@ -29,7 +29,7 @@ async def handle_tap(request):
             return web.Response(text=f"Error: {str(e)}", status=500)
 
 app = web.Application()
-app.router.add_get('/notify-tap/{event_data}', handle_tap)
+app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
 
 if __name__ == '__main__':
     web.run_app(app, port=8099)

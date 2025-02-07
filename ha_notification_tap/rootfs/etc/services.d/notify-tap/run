@@ -1,4 +1,18 @@
 #!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Start the notify-tap service
+# ==============================================================================
+
+# Verify we can access init
+if [ ! -x /init ]; then
+    bashio::log.error "Init script not executable!"
+    exit 1
+fi
+
+# Debug: Show environment
+bashio::log.info "Current directory: $(pwd)"
+bashio::log.info "Python version: $(python3 --version)"
+bashio::log.info "Init permissions: $(ls -la /init)"
 
 cd /usr/src/app || bashio::exit.nok "Failed to change directory"
 

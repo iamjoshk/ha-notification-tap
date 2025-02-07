@@ -6,7 +6,23 @@ WORKDIR /usr/src/app
 COPY run.py .
 COPY rootfs /
 
-# Use s6-overlay from base image
+# Debug: Show init file and permissions
+RUN ls -la /init && \
+    # Ensure S6 overlay directories exist
+    mkdir -p \
+        /etc/services.d \
+        /etc/cont-init.d \
+        /etc/cont-finish.d \
+        /etc/fix-attrs.d && \
+    # Fix permissions
+    chmod +x /init && \
+    chmod -R 755 /etc/services.d && \
+    chmod -R 755 /etc/cont-init.d && \
+    chmod -R 755 /etc/cont-finish.d
+
+# Switch to root for init
+USER root
+
 ENTRYPOINT [ "/init" ]
 
 LABEL \

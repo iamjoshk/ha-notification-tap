@@ -8,6 +8,9 @@ def log(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] {message}", file=sys.stderr, flush=True)
 
+async def shutdown(app):
+    log("[INFO] Shutting down cleanly...")
+
 # Load config
 try:
     with open('/data/options.json') as f:
@@ -74,17 +77,14 @@ async def handle_tap(request):
                 
                 if response.status == 200:
                     log("[INFO] Event fired successfully")
-                    
-                    # Only redirect if URL is configured
-                    if REDIRECT_URL:
-                        return web.Response(
-                            status=302,
-                            headers={
-                                'Location': REDIRECT_URL,
-                                'Cache-Control': 'no-cache'
-                            }
-                        )
-                    return web.Response(status=204)  # No content if no redirect
+                    # Redirect to HA app
+                    return web.Response(
+                        status=302,
+                        headers={
+                            'Location': 'homeassistant://navigate/lovelace/0',
+                            'Cache-Control': 'no-cache'
+                        }
+                    )
                     
                 log(f"[ERROR] Failed to fire event: {response_text}")
                 return web.Response(text="Failed to fire event", status=response.status)
@@ -93,6 +93,7 @@ async def handle_tap(request):
         return web.Response(text=str(e), status=500)
 
 app = web.Application()
+app.on_shutdown.append(shutdown)
 # Support both GET and POST
 app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
 app.router.add_get('/api/notify-tap', handle_tap)

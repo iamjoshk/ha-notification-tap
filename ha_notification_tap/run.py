@@ -8,16 +8,12 @@ def log(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] {message}", file=sys.stderr, flush=True)
 
-async def shutdown(app):
-    log("[INFO] Shutting down cleanly...")
-
 # Load config
 try:
     with open('/data/options.json') as f:
         config = json.load(f)
         HA_TOKEN = config.get('ha_token')
         HA_HOST = config.get('ha_host', 'homeassistant')
-        REDIRECT_URL = config.get('redirect_url', 'homeassistant://navigate/lovelace/0')
         # Add /api to base URL
         HA_URL = f"http://{HA_HOST}:8123/api"
         log(f"[DEBUG] Config loaded - Host: {HA_HOST}, Token: {'Present' if HA_TOKEN else 'Missing'}")
@@ -93,7 +89,6 @@ async def handle_tap(request):
         return web.Response(text=str(e), status=500)
 
 app = web.Application()
-app.on_shutdown.append(shutdown)
 # Support both GET and POST
 app.router.add_get('/api/notify-tap/{event_data}', handle_tap)
 app.router.add_get('/api/notify-tap', handle_tap)

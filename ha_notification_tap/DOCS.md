@@ -8,6 +8,10 @@ The add-on uses a `clickAction` URL to send an HTTP POST API call which then fir
 
 `event_data` can be defined by a variable in your script or automation prior to the notification action. This will define the data in the `notification_tap_event` that you can use as an event trigger.
 
+## Installation
+I wouldn't install this if I were you.
+But if you are so inclined, copy the URL for the repo (https://github.com/iamjoshk/ha-notification-tap) and go to Add Ons, then go to Add On Store, then click the 3 dots in the upper right corner, then Repositories, then paste the URL in the box and click Add. It should add the repo. You might need to refresh the browser, restart Home Assistant, spin around three times, and refresh the browser again before it shows up in the Add On Store after adding the repo. It's weird sometimes. When it's there, click the Add On and then install. But again, I wouldn't install this.
+
 ## Configuration
 
 + After installing the add-on you need to create a long-lived access token.

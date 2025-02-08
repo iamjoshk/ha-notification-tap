@@ -1,5 +1,5 @@
 name: "HA Notification Tap"
-version: "0.0.1-alpha.41"
+version: "0.0.1-alpha.42"
 slug: "ha_notification_tap"
 description: "Fire events from notification taps"
 url: "https://github.com/iamjoshk/ha-notification-tap"
@@ -18,10 +18,12 @@ ports_description:
 options:
   ha_token: "!secret notify_tap_token"
   ha_host: "fhassistant"
+  redirect_url: "homeassistant://navigate/lovelace/0"
   debug: false
 schema:
   ha_token: str
   ha_host: str
+  redirect_url: str
   debug: bool
 host_network: true
 hassio_api: true

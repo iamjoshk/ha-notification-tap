@@ -14,6 +14,7 @@ try:
         config = json.load(f)
         HA_TOKEN = config.get('ha_token')
         HA_HOST = config.get('ha_host', 'homeassistant')
+        REDIRECT_URL = config.get('redirect_url', 'homeassistant://navigate/lovelace/0')
         # Add /api to base URL
         HA_URL = f"http://{HA_HOST}:8123/api"
         log(f"[DEBUG] Config loaded - Host: {HA_HOST}, Token: {'Present' if HA_TOKEN else 'Missing'}")
@@ -73,11 +74,10 @@ async def handle_tap(request):
                 
                 if response.status == 200:
                     log("[INFO] Event fired successfully")
-                    # Redirect to HA app
                     return web.Response(
                         status=302,
                         headers={
-                            'Location': 'homeassistant://navigate/lovelace/0',
+                            'Location': REDIRECT_URL,
                             'Cache-Control': 'no-cache'
                         }
                     )

@@ -23,7 +23,7 @@ options:
 schema:
   ha_token: str
   ha_host: str
-  redirect_url: match(^(homeassistant://|http://|https://|entityId:|lovelace/|my\.)|$)  # Support all HA URL schemes
+  redirect_url: match(^(homeassistant://|http://|https://|entityId:|./|noAction|lovelace/|my\.)|$)  # Support all HA URL schemes
   debug: bool
 host_network: true
 hassio_api: true

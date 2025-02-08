@@ -74,13 +74,17 @@ async def handle_tap(request):
                 
                 if response.status == 200:
                     log("[INFO] Event fired successfully")
-                    return web.Response(
-                        status=302,
-                        headers={
-                            'Location': REDIRECT_URL,
-                            'Cache-Control': 'no-cache'
-                        }
-                    )
+                    
+                    # Only redirect if URL is configured
+                    if REDIRECT_URL:
+                        return web.Response(
+                            status=302,
+                            headers={
+                                'Location': REDIRECT_URL,
+                                'Cache-Control': 'no-cache'
+                            }
+                        )
+                    return web.Response(status=204)  # No content if no redirect
                     
                 log(f"[ERROR] Failed to fire event: {response_text}")
                 return web.Response(text="Failed to fire event", status=response.status)
